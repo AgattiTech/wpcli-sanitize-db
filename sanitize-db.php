@@ -9,7 +9,11 @@ class Sanitize_DB extends WP_CLI_Command {
 
 
     public function __construct() {
-        require_once('vendor/autoload.php');
+        if ( file_exists( 'vendor/autoload.php' ) ) {
+            // needed when runing via git clone; not needed when running as a wp-cli package
+            require 'vendor/autoload.php';
+        }
+
         $this->faker = Faker\Factory::create();
 
         WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database?", $assoc_args );
