@@ -22,6 +22,8 @@ class Sanitize_DB extends WP_CLI_Command {
 
 	/**
 	 * Sanitizes all sensitive data in a database.
+     *
+     * Runs all other available `wp sanitize` commands.
 	 *
 	 * ## EXAMPLES
 	 *
@@ -47,6 +49,14 @@ class Sanitize_DB extends WP_CLI_Command {
     }
 
 
+	/**
+	 * Sanitizes sensitive user data in a database.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp sanitize users
+	 *
+	 */
 	public function users( $args, $assoc_args ) {
 
         // wp_update_user is too slow
@@ -124,6 +134,14 @@ class Sanitize_DB extends WP_CLI_Command {
 	}
 
 
+	/**
+	 * Sanitizes sensitive comments data in a database.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp sanitize comments
+	 *
+	 */
 	public function comments( $args, $assoc_args ) {
         // Comments
         // public comments are public but unapproved comments are not
@@ -145,6 +163,14 @@ class Sanitize_DB extends WP_CLI_Command {
     }
 
 
+	/**
+	 * Sanitizes sensitive gravityforms data in a database.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp sanitize gravityforms
+	 *
+	 */
 	public function gravityforms( $args, $assoc_args ) {
         WP_CLI::log('Sanitizing Gravity Forms tables');
         // we don't know what is in here, it's not used at runtime, so delete everything
@@ -178,6 +204,14 @@ class Sanitize_DB extends WP_CLI_Command {
     }
 
 
+	/**
+	 * Sanitizes sensitive woocommerce data in a database.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp sanitize woocommerce
+	 *
+	 */
 	public function woocommerce( $args, $assoc_args ) {
 
         // calling `update_user_meta()` for each field for each user (or order) is too slow; it takes 40 seconds/100 users (or orders).
@@ -260,6 +294,14 @@ class Sanitize_DB extends WP_CLI_Command {
 
 
 	// from wpcli Transient_Command::delete_all()
+	/**
+	 * Deletes transients in a database.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp sanitize transients
+	 *
+	 */
 	public function transients( $args, $assoc_args ) {
         global $wpdb;
 
