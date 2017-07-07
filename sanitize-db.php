@@ -15,8 +15,6 @@ class Sanitize_DB extends WP_CLI_Command {
         }
 
         $this->faker = Faker\Factory::create();
-
-        WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database?", $assoc_args );
     }
 
 
@@ -31,6 +29,11 @@ class Sanitize_DB extends WP_CLI_Command {
 	 *
 	 */
 	public function db( $args, $assoc_args ) {
+
+        WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database?", $assoc_args );
+
+        // skip future prompts
+        $assoc_args['yes'] = true;
 
         $this->transients($args, $assoc_args);
         $this->comments($args, $assoc_args);
@@ -58,6 +61,9 @@ class Sanitize_DB extends WP_CLI_Command {
 	 *
 	 */
 	public function users( $args, $assoc_args ) {
+
+        WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database?", $assoc_args );
+        WP_CLI::log('Sanitizing user data');
 
         // wp_update_user is too slow
         // changing a users email or passwor via wp_update_user will send them an email; let's not do that
@@ -143,9 +149,12 @@ class Sanitize_DB extends WP_CLI_Command {
 	 *
 	 */
 	public function comments( $args, $assoc_args ) {
+
+        WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database?", $assoc_args );
+        WP_CLI::log('Sanitizing non-public comments');
+
         // Comments
         // public comments are public but unapproved comments are not
-        WP_CLI::log('Sanitizing non-public comments');
         $comments = get_comments(['status' => 'hold']);
         foreach ($comments as $comment) {
             if ('pingback' === $comment->comment_type) {
@@ -172,7 +181,10 @@ class Sanitize_DB extends WP_CLI_Command {
 	 *
 	 */
 	public function gravityforms( $args, $assoc_args ) {
+
+        WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database?", $assoc_args );
         WP_CLI::log('Sanitizing Gravity Forms tables');
+
         // we don't know what is in here, it's not used at runtime, so delete everything
         
         /* going one by one maxes out my 16GB of memory
@@ -213,6 +225,9 @@ class Sanitize_DB extends WP_CLI_Command {
 	 *
 	 */
 	public function woocommerce( $args, $assoc_args ) {
+
+        WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database?", $assoc_args );
+        WP_CLI::log('Sanitizing WooCommerce data');
 
         // calling `update_user_meta()` for each field for each user (or order) is too slow; it takes 40 seconds/100 users (or orders).
 
@@ -303,6 +318,10 @@ class Sanitize_DB extends WP_CLI_Command {
 	 *
 	 */
 	public function transients( $args, $assoc_args ) {
+
+        WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database?", $assoc_args );
+        WP_CLI::log('Sanitizing transients');
+
         global $wpdb;
 
         // Always delete all transients from DB too.
