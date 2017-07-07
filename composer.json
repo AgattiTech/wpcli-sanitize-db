@@ -1,0 +1,20 @@
+{
+    "name": "freshconsulting/wpcli-sanitize-db",
+    "description": "Removes sensitive data from your local database",
+    "type": "wp-cli-package",
+    "homepage": "https://bitbucket.org/freshconsulting/wpcli-sanitize-db",
+    "autoload": {
+        "files": [ "sanitize-db.php" ]
+    },
+    "require": {
+        "fzaninotto/faker": "^1.6"
+    },
+    "require-dev": {
+    },
+    "authors": [
+        {
+            "name": "Fresh Consulting",
+            "homepage": "https://www.freshconsulting.com"
+        }
+    ]
+}
