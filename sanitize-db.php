@@ -63,7 +63,7 @@ class Sanitize_DB extends WP_CLI_Command {
 	public function users( $args, $assoc_args ) {
 
         WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database?", $assoc_args );
-        WP_CLI::log('Sanitizing user data');
+        WP_CLI::log(WP_CLI::colorize('%cSanitizing user data%n'));
 
         // wp_update_user is too slow
         // changing a users email or passwor via wp_update_user will send them an email; let's not do that
@@ -151,7 +151,7 @@ class Sanitize_DB extends WP_CLI_Command {
 	public function comments( $args, $assoc_args ) {
 
         WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database?", $assoc_args );
-        WP_CLI::log('Sanitizing non-public comments');
+        WP_CLI::log(WP_CLI::colorize('%cSanitizing non-public comments%n'));
 
         // Comments
         // public comments are public but unapproved comments are not
@@ -183,7 +183,7 @@ class Sanitize_DB extends WP_CLI_Command {
 	public function gravityforms( $args, $assoc_args ) {
 
         WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database?", $assoc_args );
-        WP_CLI::log('Sanitizing Gravity Forms tables');
+        WP_CLI::log(WP_CLI::colorize('%cSanitizing Gravity Forms tables%n'));
 
         // we don't know what is in here, it's not used at runtime, so delete everything
         
@@ -227,7 +227,7 @@ class Sanitize_DB extends WP_CLI_Command {
 	public function woocommerce( $args, $assoc_args ) {
 
         WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database?", $assoc_args );
-        WP_CLI::log('Sanitizing WooCommerce data');
+        WP_CLI::log(WP_CLI::colorize('%cSanitizing WooCommerce data%n'));
 
         // calling `update_user_meta()` for each field for each user (or order) is too slow; it takes 40 seconds/100 users (or orders).
 
@@ -320,22 +320,8 @@ class Sanitize_DB extends WP_CLI_Command {
 	public function transients( $args, $assoc_args ) {
 
         WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database?", $assoc_args );
-        WP_CLI::log('Sanitizing transients');
-
-        global $wpdb;
-
-        // Always delete all transients from DB too.
-        $count = $wpdb->query(
-            "DELETE FROM $wpdb->options
-            WHERE option_name LIKE '\_transient\_%'
-            OR option_name LIKE '\_site\_transient\_%'"
-        );
-
-        if ($count > 0) {
-            WP_CLI::success("$count transients deleted from the database.");
-        } else {
-            WP_CLI::success("No transients found.");
-        }
+        WP_CLI::log(WP_CLI::colorize('%cSanitizing transients%n'));
+        WP_CLI::runcommand('transient delete --all');
 
     }
 	
