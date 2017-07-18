@@ -1,7 +1,7 @@
 <?php
 
 if ( ! defined( 'WP_CLI' ) ) {
-	return;
+    return;
 }
 
 
@@ -18,17 +18,17 @@ class Sanitize_DB extends WP_CLI_Command {
     }
 
 
-	/**
-	 * Sanitizes all sensitive data in a database.
+    /**
+     * Sanitizes all sensitive data in a database.
      *
      * Runs all other available `wp sanitize` commands.
-	 *
-	 * ## EXAMPLES
-	 *
-	 *     wp sanitize db
-	 *
-	 */
-	public function db( $args, $assoc_args ) {
+     *
+     * ## EXAMPLES
+     *
+     *     wp sanitize db
+     *
+     */
+    public function db( $args, $assoc_args ) {
 
         WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database?", $assoc_args );
 
@@ -52,15 +52,15 @@ class Sanitize_DB extends WP_CLI_Command {
     }
 
 
-	/**
-	 * Sanitizes sensitive user data in a database.
-	 *
-	 * ## EXAMPLES
-	 *
-	 *     wp sanitize users
-	 *
-	 */
-	public function users( $args, $assoc_args ) {
+    /**
+     * Sanitizes sensitive user data in a database.
+     *
+     * ## EXAMPLES
+     *
+     *     wp sanitize users
+     *
+     */
+    public function users( $args, $assoc_args ) {
 
         WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database?", $assoc_args );
         WP_CLI::log(WP_CLI::colorize('%cSanitizing user data%n'));
@@ -137,18 +137,18 @@ class Sanitize_DB extends WP_CLI_Command {
             );
         }
 
-	}
+    }
 
 
-	/**
-	 * Sanitizes sensitive comments data in a database.
-	 *
-	 * ## EXAMPLES
-	 *
-	 *     wp sanitize comments
-	 *
-	 */
-	public function comments( $args, $assoc_args ) {
+    /**
+     * Sanitizes sensitive comments data in a database.
+     *
+     * ## EXAMPLES
+     *
+     *     wp sanitize comments
+     *
+     */
+    public function comments( $args, $assoc_args ) {
 
         WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database?", $assoc_args );
         WP_CLI::log(WP_CLI::colorize('%cSanitizing non-public comments%n'));
@@ -172,21 +172,21 @@ class Sanitize_DB extends WP_CLI_Command {
     }
 
 
-	/**
-	 * Sanitizes sensitive gravityforms data in a database.
-	 *
-	 * ## EXAMPLES
-	 *
-	 *     wp sanitize gravityforms
-	 *
-	 */
-	public function gravityforms( $args, $assoc_args ) {
+    /**
+     * Sanitizes sensitive gravityforms data in a database.
+     *
+     * ## EXAMPLES
+     *
+     *     wp sanitize gravityforms
+     *
+     */
+    public function gravityforms( $args, $assoc_args ) {
 
         WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database?", $assoc_args );
         WP_CLI::log(WP_CLI::colorize('%cSanitizing Gravity Forms tables%n'));
 
         // we don't know what is in here, it's not used at runtime, so delete everything
-        
+
         /* going one by one maxes out my 16GB of memory
          * we have sites with 6.9 million+ rows in wp_rg_lead_detail
         $forms = GFAPI::get_forms();
@@ -216,15 +216,15 @@ class Sanitize_DB extends WP_CLI_Command {
     }
 
 
-	/**
-	 * Sanitizes sensitive woocommerce data in a database.
-	 *
-	 * ## EXAMPLES
-	 *
-	 *     wp sanitize woocommerce
-	 *
-	 */
-	public function woocommerce( $args, $assoc_args ) {
+    /**
+     * Sanitizes sensitive woocommerce data in a database.
+     *
+     * ## EXAMPLES
+     *
+     *     wp sanitize woocommerce
+     *
+     */
+    public function woocommerce( $args, $assoc_args ) {
 
         WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database?", $assoc_args );
         WP_CLI::log(WP_CLI::colorize('%cSanitizing WooCommerce data%n'));
@@ -308,23 +308,23 @@ class Sanitize_DB extends WP_CLI_Command {
     }
 
 
-	// from wpcli Transient_Command::delete_all()
-	/**
-	 * Deletes transients in a database.
-	 *
-	 * ## EXAMPLES
-	 *
-	 *     wp sanitize transients
-	 *
-	 */
-	public function transients( $args, $assoc_args ) {
+    // from wpcli Transient_Command::delete_all()
+    /**
+     * Deletes transients in a database.
+     *
+     * ## EXAMPLES
+     *
+     *     wp sanitize transients
+     *
+     */
+    public function transients( $args, $assoc_args ) {
 
         WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database?", $assoc_args );
         WP_CLI::log(WP_CLI::colorize('%cSanitizing transients%n'));
         WP_CLI::runcommand('transient delete --all');
 
     }
-	
+
 }
 WP_CLI::add_command('sanitize', 'Sanitize_DB');
 
