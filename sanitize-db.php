@@ -1,11 +1,17 @@
 <?php
+namespace WPCLI_Sanitize_DB;
 
 if ( ! defined( 'WP_CLI' ) ) {
     return;
 }
 
 
-class Sanitize_DB extends WP_CLI_Command {
+class Sanitize_DB extends \WP_CLI_Command {
+
+
+    private function confirm( $assoc_args ) {
+        \WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database `" . DB_NAME . "` on host `" . DB_HOST . "`?", $assoc_args );
+    }
 
 
     public function __construct() {
@@ -14,7 +20,7 @@ class Sanitize_DB extends WP_CLI_Command {
             require 'vendor/autoload.php';
         }
 
-        $this->faker = Faker\Factory::create();
+        $this->faker = \Faker\Factory::create();
     }
 
 
@@ -30,25 +36,25 @@ class Sanitize_DB extends WP_CLI_Command {
      */
     public function db( $args, $assoc_args ) {
 
-        WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database?", $assoc_args );
+        $this->confirm($assoc_args);
 
         // skip future prompts
         $assoc_args['yes'] = true;
 
-        $this->transients($args, $assoc_args);
-        $this->comments($args, $assoc_args);
-        $this->users($args, $assoc_args);
+        $this->transients($assoc_args);
+        $this->comments($assoc_args);
+        $this->users($assoc_args);
 
         //$active_plugins = (array) get_option( 'active_plugins', array() );
         $active_plugins = get_plugins();
         if (in_array( 'gravityforms/gravityforms.php', $active_plugins ) || array_key_exists( 'gravityforms/gravityforms.php', $active_plugins )) {
-            $this->gravityforms($args, $assoc_args);
+            $this->gravityforms($assoc_args);
         }
         if (in_array( 'woocommerce/woocommerce.php', $active_plugins ) || array_key_exists( 'woocommerce/woocommerce.php', $active_plugins )) {
-            $this->woocommerce($args, $assoc_args);
+            $this->woocommerce($assoc_args);
         }
 
-        WP_CLI::success( "Database sanitized." );
+        \WP_CLI::success( "Database sanitized." );
     }
 
 
@@ -60,10 +66,10 @@ class Sanitize_DB extends WP_CLI_Command {
      *     wp sanitize users
      *
      */
-    public function users( $args, $assoc_args ) {
+    public function users( $assoc_args ) {
 
-        WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database?", $assoc_args );
-        WP_CLI::log(WP_CLI::colorize('%cSanitizing user data%n'));
+        $this->confirm($assoc_args);
+        \WP_CLI::log(\WP_CLI::colorize('%cSanitizing user data%n'));
 
         // wp_update_user is too slow
         // changing a users email or passwor via wp_update_user will send them an email; let's not do that
@@ -79,7 +85,7 @@ class Sanitize_DB extends WP_CLI_Command {
                 $end = time();
                 $elapsed = $end - $start;
                 $start = $end;
-                WP_CLI::log('Processed ' . $count . ' users in ' . $elapsed . ' seconds');
+                \WP_CLI::log('Processed ' . $count . ' users in ' . $elapsed . ' seconds');
             }
             if (false !== strpos($user->user_email, '@freshconsulting.com')) {
                 // skip Fresh Consulting users
@@ -93,7 +99,7 @@ class Sanitize_DB extends WP_CLI_Command {
                 'first_name' => $first_name,
                 'last_name' => $last_name,
                 'nickname' => $this->faker->domainWord,
-                'description' => $this->faker->text($maxNbChars = 200),
+                'description' => $this->faker->text(200),
             ];
             foreach ($usermetadata as $key => $value) {
                 $wpdb->query(
@@ -128,8 +134,8 @@ class Sanitize_DB extends WP_CLI_Command {
         ];
 
         foreach ($delete_keys as $meta_key) {
-            WP_CLI::log('Starting ' . $meta_key);
-            $umeta_ids = $wpdb->get_col(
+            \WP_CLI::log('Starting ' . $meta_key);
+            $wpdb->query(
                 $wpdb->prepare(
                     "DELETE FROM {$wpdb->usermeta} WHERE (`meta_key` = %s OR `meta_key` = %s)",
                     array($meta_key, '_' . $meta_key)
@@ -148,10 +154,10 @@ class Sanitize_DB extends WP_CLI_Command {
      *     wp sanitize comments
      *
      */
-    public function comments( $args, $assoc_args ) {
+    public function comments( $assoc_args ) {
 
-        WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database?", $assoc_args );
-        WP_CLI::log(WP_CLI::colorize('%cSanitizing non-public comments%n'));
+        $this->confirm($assoc_args);
+        \WP_CLI::log(\WP_CLI::colorize('%cSanitizing non-public comments%n'));
 
         // Comments
         // public comments are public but unapproved comments are not
@@ -165,9 +171,9 @@ class Sanitize_DB extends WP_CLI_Command {
                 'comment_author' => $this->faker->name,
                 'comment_author_email' => $this->faker->safeEmail,
                 'comment_author_url' => $this->faker->domainName,
-                'comment_content' => $this->faker->text($maxNbChars = 400),
+                'comment_content' => $this->faker->text(400),
             ];
-            $result = wp_update_comment($commentarr);
+            wp_update_comment($commentarr);
         }
     }
 
@@ -180,10 +186,10 @@ class Sanitize_DB extends WP_CLI_Command {
      *     wp sanitize gravityforms
      *
      */
-    public function gravityforms( $args, $assoc_args ) {
+    public function gravityforms( $assoc_args ) {
 
-        WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database?", $assoc_args );
-        WP_CLI::log(WP_CLI::colorize('%cSanitizing Gravity Forms tables%n'));
+        $this->confirm($assoc_args);
+        \WP_CLI::log(\WP_CLI::colorize('%cSanitizing Gravity Forms tables%n'));
 
         // we don't know what is in here, it's not used at runtime, so delete everything
 
@@ -224,10 +230,10 @@ class Sanitize_DB extends WP_CLI_Command {
      *     wp sanitize woocommerce
      *
      */
-    public function woocommerce( $args, $assoc_args ) {
+    public function woocommerce( $assoc_args ) {
 
-        WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database?", $assoc_args );
-        WP_CLI::log(WP_CLI::colorize('%cSanitizing WooCommerce data%n'));
+        $this->confirm($assoc_args);
+        \WP_CLI::log(\WP_CLI::colorize('%cSanitizing WooCommerce data%n'));
 
         // calling `update_user_meta()` for each field for each user (or order) is too slow; it takes 40 seconds/100 users (or orders).
 
@@ -262,7 +268,7 @@ class Sanitize_DB extends WP_CLI_Command {
 
 
         foreach ($user_fields as $meta_key => $faker_function) {
-            WP_CLI::log('Starting ' . $meta_key);
+            \WP_CLI::log('Starting ' . $meta_key);
             $umeta_ids = $wpdb->get_col(
                 $wpdb->prepare(
                     "SELECT umeta_id FROM {$wpdb->usermeta} WHERE (`meta_key` = %s OR `meta_key` = %s) AND `meta_value` IS NOT NULL AND `meta_value` != ''",
@@ -273,7 +279,7 @@ class Sanitize_DB extends WP_CLI_Command {
                 $new_value = null;
                 if ($faker_function) {
                     $new_value = $this->faker->$faker_function;
-                } else if ($meta_key === 'cc_last_4') {
+                } elseif ($meta_key === 'cc_last_4') {
                     $new_Value = $this->faker->randomNumber(4);
                 }
                 $wpdb->query(
@@ -293,7 +299,7 @@ class Sanitize_DB extends WP_CLI_Command {
                 $new_value = null;
                 if ($faker_function) {
                     $new_value = $this->faker->$faker_function;
-                } else if ($meta_key === 'cc_last_4') {
+                } elseif ($meta_key === 'cc_last_4') {
                     $new_Value = $this->faker->randomNumber(4);
                 }
                 $wpdb->query(
@@ -317,14 +323,13 @@ class Sanitize_DB extends WP_CLI_Command {
      *     wp sanitize transients
      *
      */
-    public function transients( $args, $assoc_args ) {
+    public function transients( $assoc_args ) {
 
-        WP_CLI::confirm( "Are you sure you want to DELETE this sensitive data in the database?", $assoc_args );
-        WP_CLI::log(WP_CLI::colorize('%cSanitizing transients%n'));
-        WP_CLI::runcommand('transient delete --all');
+        $this->confirm($assoc_args);
+        \WP_CLI::log(\WP_CLI::colorize('%cSanitizing transients%n'));
+        \WP_CLI::runcommand('transient delete --all');
 
     }
 
 }
-WP_CLI::add_command('sanitize', 'Sanitize_DB');
-
+\WP_CLI::add_command('sanitize', 'WPCLI_Sanitize_DB\Sanitize_DB');
