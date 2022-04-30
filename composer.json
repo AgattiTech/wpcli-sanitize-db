@@ -6,15 +6,17 @@
     "autoload": {
         "files": [ "sanitize-db.php" ]
     },
-    "require": {
-        "fzaninotto/faker": "^1.6"
-    },
-    "require-dev": {
-    },
     "authors": [
         {
             "name": "Fresh Consulting",
             "homepage": "https://www.freshconsulting.com"
+        },
+        {
+            "name": "AgattiTech Consultoria",
+            "homepage": "https://agatti.tech"
         }
-    ]
+    ],
+    "require": {
+        "fakerphp/faker": "^1.19"
+    }
 }
