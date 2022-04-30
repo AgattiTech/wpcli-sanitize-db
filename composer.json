@@ -1,8 +1,9 @@
 {
-    "name": "freshconsulting/wpcli-sanitize-db",
+    "name": "agattitech/wpcli-sanitize-db",
     "description": "Removes sensitive data from your local database",
     "type": "wp-cli-package",
-    "homepage": "https://bitbucket.org/freshconsulting/wpcli-sanitize-db",
+    "homepage": "https://github.com/AgattiTech/wpcli-sanitize-db",
+    "license": "GPL-2.0-or-later",
     "autoload": {
         "files": [ "sanitize-db.php" ]
     },
@@ -12,7 +13,7 @@
             "homepage": "https://www.freshconsulting.com"
         },
         {
-            "name": "AgattiTech Consultoria",
+            "name": "AgattiTech",
             "homepage": "https://agatti.tech"
         }
     ],
