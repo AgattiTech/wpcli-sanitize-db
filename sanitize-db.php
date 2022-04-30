@@ -87,7 +87,7 @@ class Sanitize_DB extends \WP_CLI_Command {
                 $start = $end;
                 \WP_CLI::log('Processed ' . $count . ' users in ' . $elapsed . ' seconds');
             }
-            if (false !== strpos($user->user_email, '@freshconsulting.com')) {
+            if (in_array('administrator', $user->roles)) {
                 // skip Fresh Consulting users
                 continue;
             }
@@ -333,3 +333,4 @@ class Sanitize_DB extends \WP_CLI_Command {
 
 }
 \WP_CLI::add_command('sanitize', 'WPCLI_Sanitize_DB\Sanitize_DB');
+
